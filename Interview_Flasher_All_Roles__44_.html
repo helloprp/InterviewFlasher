@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOWI/TAI Interview Flasher — All Roles</title>
+<style>
+  :root{
+    --navy-950:#0f1b2d; --navy-900:#152540; --navy-800:#1d3157; --navy-700:#28406f;
+    --paper:#f6f4ee; --paper-dim:#eae6da; --ink:#1b2333; --ink-soft:#5b6577;
+    --gold:#c99a3d; --gold-soft:#e7cd8f; --green:#3f7a5c; --line:#d8d2c1;
+    --shadow: 0 20px 50px -20px rgba(15,27,45,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{ margin:0; font-family:"Source Sans Pro","Segoe UI",Helvetica,Arial,sans-serif; background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(28,64,111,0.10), transparent 60%), var(--paper);
+    color:var(--ink); min-height:100vh; }
+  .display{ font-family:"Georgia",serif; }
+
+  .topbar{ position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between;
+    padding:14px 28px; background:var(--navy-950); color:var(--paper); border-bottom:3px solid var(--gold); }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{ width:38px;height:38px;border-radius:50%; background:#fff; display:flex;align-items:center;justify-content:center; overflow:hidden; padding:2px; }
+  .brand-mark img{ width:100%; height:100%; object-fit:contain; }
+  .brand-text{ line-height:1.15; }
+  .brand-text .role{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-soft); }
+  .brand-text .title{ font-size:15px; font-weight:600; }
+  .top-meta{ display:flex; align-items:center; gap:22px; font-size:13px; line-height:1; color:var(--paper-dim); }
+  .top-meta span{ display:inline-flex; align-items:center; height:20px; }
+  .top-meta b{ color:#fff; font-weight:600; }
+
+  .shell{ display:flex; min-height:calc(100vh - 62px); }
+
+  .sidebar{ width:300px; flex-shrink:0; background:var(--navy-900); color:var(--paper-dim); padding:20px 0 30px;
+    overflow-y:auto; max-height:calc(100vh - 62px); border-right:1px solid var(--navy-800); }
+  .sidebar.hidden{ display:none; }
+  .sidebar h4{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--gold-soft); margin:18px 22px 8px; font-weight:700; }
+  .qnav-item{ display:flex; gap:10px; align-items:flex-start; padding:8px 22px; cursor:pointer; font-size:13px; line-height:1.35; border-left:3px solid transparent; }
+  .qnav-item:hover{ background:rgba(255,255,255,0.04); }
+  .qnav-item.active{ background:rgba(201,154,61,0.14); border-left:3px solid var(--gold); color:#fff; }
+  .qnav-item.done .qnum{ background:var(--green); border-color:var(--green); color:#fff; }
+  .qnav-item.done .qtext{ color:#a9c6b6; text-decoration:line-through; text-decoration-color:rgba(169,198,182,0.5); }
+  .qnum{ flex-shrink:0; width:20px; height:20px; border-radius:50%; border:1px solid rgba(255,255,255,0.3);
+    display:flex; align-items:center; justify-content:center; font-size:10px; margin-top:1px; }
+
+  .main{ flex:1; display:flex; flex-direction:column; align-items:center; padding:36px 24px 50px; }
+
+  /* Role picker */
+  .role-wrap{ max-width:800px; width:100%; margin-top:2vh; text-align:center; }
+  .role-wrap h1{ font-family:"Georgia",serif; font-size:28px; margin:0 0 8px; color:var(--navy-950); }
+  .role-logo{ width:150px; height:auto; object-fit:contain; margin:0 auto 10px; display:block; opacity:0.45; }
+  .role-wrap p.lede{ color:var(--ink-soft); margin:0 0 32px; font-size:15px; }
+  .role-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .role-card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:26px 24px; text-align:left;
+    cursor:pointer; box-shadow:var(--shadow); transition:transform .12s ease, border-color .12s ease; }
+  .role-card:hover{ transform:translateY(-2px); border-color:var(--gold); }
+  .role-card .rletter{ width:40px;height:40px;border-radius:10px; background:var(--navy-950); color:var(--gold-soft);
+    display:flex;align-items:center;justify-content:center; font-family:"Georgia",serif; font-weight:700; font-size:17px; margin-bottom:14px; }
+  .role-card h3{ margin:0 0 6px; font-size:17px; color:var(--navy-950); }
+  .role-card p{ margin:0; font-size:13px; color:var(--ink-soft); line-height:1.5; }
+  .role-card .qcount{ margin-top:12px; font-size:11.5px; color:var(--gold); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+
+  /* Setup screen */
+  .setup-wrap{ max-width:640px; width:100%; margin-top:2vh; }
+  .setup-card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:38px 40px; box-shadow:var(--shadow); }
+  .setup-card h1{ font-family:"Georgia",serif; font-size:26px; margin:0 0 4px; color:var(--navy-950); }
+  .setup-card .pos-tag{ font-size:12.5px; color:var(--gold); font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px; }
+  .setup-card p.lede{ color:var(--ink-soft); margin:0 0 24px; font-size:14.5px; }
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px; }
+  .field input, .field select{ width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:8px; font-size:15px; font-family:inherit; background:var(--paper); }
+  .field input:focus{ outline:2px solid var(--gold); outline-offset:1px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .modeblock{ border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:20px; background:var(--paper); }
+  .modeblock label.check{ display:flex; align-items:flex-start; gap:10px; font-size:13.5px; color:var(--ink); cursor:pointer; text-transform:none; font-weight:400; margin:0 0 8px; }
+  .modeblock label.check:last-child{ margin-bottom:0; }
+  .modeblock input[type=checkbox]{ margin-top:3px; }
+  .btn{ appearance:none; border:none; cursor:pointer; font-family:inherit; font-size:15px; font-weight:600; border-radius:9px; padding:13px 22px; transition:transform .12s ease, box-shadow .12s ease; }
+  .btn:active{ transform:translateY(1px); }
+  .btn-primary{ background:var(--navy-950); color:#fff; }
+  .btn-primary:hover{ box-shadow:0 8px 20px -8px rgba(15,27,45,0.5); }
+  .btn-ghost{ background:transparent; color:var(--navy-900); border:1px solid var(--line); }
+  .btn-gold{ background:var(--gold); color:var(--navy-950); }
+  .setup-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .back-link{ font-size:13px; color:var(--ink-soft); cursor:pointer; text-decoration:underline; background:none; border:none; padding:0; }
+
+  .consent-box{ background:#fbf6ea; border:1px solid var(--gold-soft); border-radius:10px; padding:18px 20px; margin-bottom:20px; }
+  .consent-box h3{ margin:0 0 8px; font-size:14.5px; color:var(--navy-950); }
+  .consent-box p{ margin:0 0 10px; font-size:13px; color:var(--ink-soft); line-height:1.55; }
+  .disclaimer-quote{ font-family:"Georgia",serif; font-style:italic; font-size:13.5px; color:var(--navy-900); background:#fff;
+    border-left:3px solid var(--gold); padding:12px 14px; margin:0 0 14px; line-height:1.5; }
+  .consent-box label.check{ display:flex; gap:9px; align-items:flex-start; font-size:13px; cursor:pointer; text-transform:none; font-weight:400; margin:0; }
+  .consent-box input[type=checkbox]{ margin-top:3px; }
+  .status-line{ font-size:13px; color:var(--ink-soft); margin-top:12px; }
+  .status-line.err{ color:#b64a3c; }
+
+  .intro-slide{ max-width:640px; width:100%; margin:2vh auto 0; text-align:center; }
+  .intro-slide .role-logo{ width:90px; margin:0 auto 16px; opacity:0.55; }
+  .intro-slide h1{ font-family:"Georgia",serif; font-size:26px; margin:0 0 14px; color:var(--navy-950); }
+  .intro-card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:32px 36px; box-shadow:var(--shadow); text-align:left; }
+  .intro-card p.lede{ color:var(--ink-soft); font-size:14.5px; line-height:1.65; margin:0 0 14px; text-align:left; }
+  .intro-card p.lede:last-of-type{ margin-bottom:0; }
+  .lock-notice{ background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:16px 0; }
+  .lock-notice p{ margin:0; font-size:13.5px; color:var(--ink); line-height:1.6; }
+  .lock-notice p + p{ margin-top:12px; }
+  .intro-actions{ display:flex; justify-content:center; margin-top:22px; }
+
+  .think-timer{ display:flex; align-items:center; gap:12px; margin-top:16px; font-size:13px; line-height:1; color:var(--ink-soft);
+    background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:6px 8px 6px 16px; flex-wrap:wrap; justify-content:center; }
+  .think-timer span{ display:inline-flex; align-items:center; height:26px; line-height:1; }
+  .think-timer .ttdot{ width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+  .think-timer.running .ttdot{ background:var(--green); animation:pulse 1.2s infinite; }
+  .think-timer.done .ttdot{ background:var(--green); }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+  .think-timer-btn{ appearance:none; border:1px solid var(--line); background:#fff; border-radius:999px;
+    display:inline-flex; align-items:center; height:26px; box-sizing:border-box;
+    padding:0 14px; font-size:13px; line-height:1; font-weight:600; cursor:pointer; font-family:inherit; }
+  .think-timer-btn.start{ color:var(--green); border-color:var(--green); }
+  .think-timer-btn.start:disabled{ color:var(--ink-soft); border-color:var(--line); cursor:not-allowed; opacity:.5; }
+  .think-timer-btn.end{ color:#b64a3c; border-color:#b64a3c; }
+  .think-timer-btn.end:disabled{ color:var(--ink-soft); border-color:var(--line); cursor:not-allowed; opacity:.5; }
+
+  /* Flasher */
+  .flasher{ display:none; width:100%; max-width:920px; flex-direction:column; align-items:center; }
+  .flasher.active{ display:flex; }
+  .progress-track{ width:100%; height:6px; background:var(--paper-dim); border-radius:4px; overflow:hidden; margin-bottom:26px; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg,var(--gold),var(--navy-800)); width:0%; transition:width .3s ease; }
+  .stagehead{ display:flex; align-items:center; justify-content:space-between; width:100%; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+  .stagehead .candtag{ font-size:14px; color:var(--ink-soft); }
+  .stagehead .candtag b{ color:var(--ink); }
+  .counter{ font-size:13px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .card{ width:100%; background:#fff; border-radius:20px; border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:56px 56px 48px; text-align:center; min-height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
+  .part-badge{ position:absolute; top:22px; left:28px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#fff;
+    background:var(--navy-900); padding:5px 12px; border-radius:999px; font-weight:700; }
+  .cat-badge{ font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:18px; }
+  .qtext{ font-family:"Georgia",serif; font-size:clamp(20px, 2.6vw, 29px); line-height:1.5; color:var(--navy-950); max-width:760px; white-space:pre-line; }
+  .qhint{ margin-top:18px; font-size:13px; color:var(--ink-soft); font-style:italic; max-width:640px; }
+  .controls{ display:flex; align-items:center; gap:14px; margin-top:30px; }
+  .controls .btn{ min-width:120px; }
+  .kbd-hint{ font-size:12px; color:var(--ink-soft); margin-top:14px; }
+  .kbd{ border:1px solid var(--line); border-radius:5px; padding:1px 6px; background:#fff; font-family:monospace; }
+  .toggle-sidebar-btn{ position:fixed; left:0; top:80px; z-index:15; background:var(--navy-900); color:#fff; border:none;
+    border-radius:0 8px 8px 0; padding:10px 6px; cursor:pointer; font-size:12px; }
+
+  .end-wrap{ display:none; max-width:680px; width:100%; text-align:center; margin-top:6vh; }
+  .end-wrap.active{ display:block; }
+  .end-wrap .stamp{ width:64px;height:64px;border-radius:50%; margin:0 auto 20px; background:var(--green); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:28px; }
+  .end-wrap h2{ font-family:"Georgia",serif; font-size:26px; color:var(--navy-950); margin:0 0 10px; text-transform:uppercase; letter-spacing:.04em; }
+  .end-wrap p{ color:var(--ink-soft); margin:0 0 26px; }
+  .end-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+  @media (max-width:760px){
+    .sidebar{ display:none !important; } .toggle-sidebar-btn{ display:none; } .card{ padding:36px 22px; }
+    .row2{ grid-template-columns:1fr; } .topbar{ padding:12px 16px; } .top-meta{ gap:12px; font-size:11.5px; }
+    .role-grid{ grid-template-columns:1fr; }
+  }
+  @media print{ .topbar, .sidebar, .toggle-sidebar-btn, .controls, .kbd-hint, .progress-track{ display:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark"><img id="topLogoImg" src="data:image/jpeg;base64,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aY5TJdeT2oWZomZQLwXWCAyCEjeg1HHFjU2idbg8CqJapGwyZglAbC4W9LMObhA2a30qvWMqPBMRsbWquLW0aRYVGnPHEQIiyq6Lb7QBVLikUfUol0pRwKNLoDyQCGksj6IBB4mzSckwtNREBnLYzLJ5hajYrldyxMfN8ZPIMC8S0EdUFHmS2fSBoeoYpZsqh6SnAJbcLdO2iJjdMKbjA3WeZanxSQU1PKH9gbkeloR5MZKQoxLHuSZMz+c8MitACN9r/YdPbyHMxcQohwuQy3qc7wFTihuXUBDnYIbPPdYbALloabwvlmMp7eLYeK0PPMrWcPQo6tSnVonphKBeoxqLKxm1FSuOiHTs7lCK2zmYRRbp3zGgWesUhllxg905YU5tb9R0XfTxX//aAAwDAQACAAMAAAAQ8y888538884288u238GC187Of888+4eKwT7V88888887SOfn88888888dDV1988888888sUAl8888888888+j+88888888889y888888888888288888886Vnw2QPPZ08888FKiUwcFkW88EMlx/N0tzJlCA8888888888888//EACYRAQABAwMBCQEAAAAAAAAAAAERACExQVFhcRAgMIGRocHR4bH/2gAIAQMBAT8QpQCncVglqeUO61DDz2rZk2aJCvqPxSsEPYybJpaAWIlbss05Vj9p7CZefJp1zzSJSV7gJ4SosbM/laWvf9ptASkU9p087UQgPS/zTHBvoedD4LfDy+/SnUsD3/NjvnMpQ/G0ZJh3M0x0gx60QHAbUjKdXx9+ng3D+B07ChFSJysdfylUrnwpxws9T7pQikYbB8+HJvA9z8mo2z/dKz4fAKP3UEGr/A+/FYacnWCfAADjUmlA7+DdiPmnsyLcmFj0o5xmNt5asyDOZ0ilppIQQvJSRmszHE0SpKHoxU/JiPrn0oAmBI92RBcF7Xt7VLd5JYLOl/qpF0msc3kuU3uySLJs4/lXEzGgnK0wdvbWOk5qTHaGFkWaiK8QXF3Zi1TZrYlZHN43327Xout2eEYjKcz6IQQsyZdmeMgY18wC4RN8zpYL2zLLw4kAaCYXc+OHikzIHhUyb+c560QSWTeXeduP7sdhS6SsMb8M+2k1EAyyvMeWIt1zYOJ6TZb4t1VfIowAtrLs3OrGbQ6VfIyi+xbVdvqhqY9VCJdT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" alt="YOWI logo"></div>
+    <div class="brand-text">
+      <div class="role">YOWI / TAI · Human Resources</div>
+      <div class="title">Interview Flasher</div>
+    </div>
+  </div>
+  <div class="top-meta" id="topMeta" style="display:none;">
+    <span>Candidate: <b id="topCandidate">—</b></span>
+    <span>Position: <b id="topPosition">—</b></span>
+  </div>
+</div>
+
+<div class="shell">
+  <button class="toggle-sidebar-btn" id="toggleSidebarBtn" style="display:none;">☰ Questions</button>
+  <div class="sidebar hidden" id="sidebar"></div>
+
+  <div class="main">
+
+    <!-- SCREEN 0: ROLE PICKER -->
+    <div class="role-wrap" id="roleScreen">
+      <img class="role-logo" id="roleLogoImg" alt="YOWI logo">
+      <h1>Which role are you interviewing for?</h1>
+      <p class="lede">Pick a role — the common HR screening questions plus that role's usual interview questions will load automatically.</p>
+      <div class="role-grid" id="roleGrid"></div>
+    </div>
+
+    <!-- SCREEN 1: SETUP -->
+    <div class="setup-wrap" id="setupScreen" style="display:none;">
+      <div class="setup-card">
+        <div class="pos-tag" id="setupPosTag">Position</div>
+        <h1 id="setupTitle">Initial Interview</h1>
+        <p class="lede">Set up the session, then flash each question on screen for the candidate to answer on camera. Record this via Zoom; the recording gets forwarded to the hiring manager.</p>
+
+        <div class="field"><label for="candName">Candidate name</label><input type="text" id="candName" placeholder="e.g. Juan Dela Cruz"></div>
+        <div class="row2">
+          <div class="field"><label for="interviewer">Interviewer (HR)</label><input type="text" id="interviewer" placeholder="e.g. Paige"></div>
+          <div class="field"><label for="dateField">Interview date</label><input type="date" id="dateField"></div>
+        </div>
+
+        <div class="modeblock">
+          <label class="check"><input type="checkbox" id="incSelfIntro" checked> Include Part 0 — Self-Introduction (2)</label>
+          <label class="check"><input type="checkbox" id="incGeneral" checked> Include Part 1 — General HR Screening Questions (<span id="genCount">18</span>)</label>
+          <label class="check"><input type="checkbox" id="incRole" checked> Include Part 2 — <span id="roleLabelInline">Role-Specific</span> Questions (<span id="roleCount">0</span>)</label>
+        </div>
+
+        <div class="setup-actions">
+          <button class="back-link" id="backToRoleBtn">← Choose a different role</button>
+          <button class="btn btn-primary" id="startBtn">Continue →</button>
+        </div>
+        <div class="status-line" id="setupStatus"></div>
+      </div>
+    </div>
+
+    <!-- SCREEN 1.1: WELCOME -->
+    <div class="intro-slide" id="welcomeScreen" style="display:none;">
+      <img class="role-logo" id="welcomeLogoImg" alt="YOWI logo">
+      <h1>Welcome to Yahshua Outsourcing Worldwide Inc.</h1>
+      <div class="intro-card">
+        <p class="lede">Thank you for your interest in joining our team. This comprehensive, guided interview will walk you through a series of questions about your background and the role you're applying for.</p>
+        <p class="lede">Each question will appear on screen — please read it aloud yourself, then take your time and answer naturally.</p>
+      </div>
+      <div class="intro-actions"><button class="btn btn-primary" id="welcomeNextBtn">Next →</button></div>
+    </div>
+
+    <!-- SCREEN 1.2: DATA PRIVACY & CONSENT -->
+    <div class="intro-slide" id="privacyScreen" style="display:none;">
+      <img class="role-logo" id="privacyLogoImg" alt="YOWI logo">
+      <h1>Data Privacy & Consent</h1>
+      <div class="intro-card">
+        <p class="lede">In accordance with the Data Privacy Act of 2012 (Republic Act No. 10173), YAHSHUA Outsourcing Worldwide, Inc. and The ABBA Initiative, OPC collect and process the personal information and responses you provide during this interview solely for recruitment and candidate evaluation purposes. Your data will be kept confidential, stored securely, and accessed only by authorized hiring personnel. It will not be shared with third parties without your consent, except as required by law.</p>
+        <p class="lede" id="privacySelfIntroLine">This interview will also ask you to briefly introduce yourself, including a short personal and family background and details about your current employment status and reasons for leaving past jobs. This information is collected solely for hiring evaluation purposes.</p>
+        <div class="lock-notice">
+          <label class="check"><input type="checkbox" id="privacyConsentCheck"> I have read and understood the above, and I voluntarily consent to the collection and processing of my personal data for this recruitment process.</label>
+        </div>
+        <div class="status-line" id="privacyStatus"></div>
+      </div>
+      <div class="intro-actions"><button class="btn btn-primary" id="privacyNextBtn" disabled>Next →</button></div>
+    </div>
+
+    <!-- SCREEN 1.3: INSTRUCTIONS -->
+    <div class="intro-slide" id="instructionsScreen" style="display:none;">
+      <img class="role-logo" id="instructionsLogoImg" alt="YOWI logo">
+      <h1>Before you begin</h1>
+      <div class="intro-card">
+        <p class="lede">A couple of quick notes on how this will go:</p>
+        <div class="lock-notice">
+          <p><b>1. Please read each question aloud yourself before answering.</b> Each question will appear on screen — just read it out loud, then take your time to respond.</p>
+          <p><b>2. You'll have 30 seconds to gather your thoughts.</b> A short timer will appear after each question so you can take a moment to organize your answer — but if you're ready to answer right away, that's perfectly fine too.</p>
+        </div>
+      </div>
+      <div class="intro-actions"><button class="btn btn-primary" id="instructionsNextBtn">Next →</button></div>
+    </div>
+
+    <!-- SCREEN 1.4: ENCOURAGEMENT -->
+    <div class="intro-slide" id="encourageScreen" style="display:none;">
+      <img class="role-logo" id="encourageLogoImg" alt="YOWI logo">
+      <h1>One last thing before we begin</h1>
+      <div class="intro-card">
+        <p class="lede">You'll notice this interview covers quite a few questions — that's by design. Answering these well now means you're less likely to need another full round of questions before moving further in our process, so this is genuinely worth the time you put into it.</p>
+        <p class="lede">Take a breath, get comfortable, and just be yourself. There's no need to rush — clear, honest answers matter far more than perfectly polished ones.</p>
+        <p class="lede"><b>Give it your best shot — we're rooting for you!</b></p>
+      </div>
+      <div class="intro-actions"><button class="btn btn-primary" id="encourageStartBtn">I'm ready — Start Interview →</button></div>
+    </div>
+
+    <!-- SCREEN 2: FLASHER -->
+    <div class="flasher" id="flasherScreen">
+      <div class="stagehead">
+        <div class="candtag">Interviewing <b id="candTagName">—</b></div>
+        <div class="counter" id="counterText">Question 1 of 1</div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+      <div class="card">
+        <div class="part-badge" id="partBadge">Part 1 · General</div>
+        <div class="cat-badge" id="catBadge">Category</div>
+        <div class="qtext" id="qtext">Question text goes here</div>
+        <div class="qhint" id="qhint"></div>
+        <div class="think-timer" id="thinkTimer">
+          <div class="ttdot"></div>
+          <span id="thinkTimerText">30s — click Start when ready</span>
+          <button class="think-timer-btn start" id="thinkStartBtn" type="button">▶ Start</button>
+          <button class="think-timer-btn end" id="thinkEndBtn" type="button" disabled>■ End</button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-ghost" id="prevBtn">← Previous</button>
+        <button class="btn btn-gold" id="skipBtn">Skip</button>
+        <button class="btn btn-primary" id="nextBtn">Next →</button>
+      </div>
+      <div class="kbd-hint">Use <span class="kbd">←</span> <span class="kbd">→</span> to navigate · click any question in the side list to jump</div>
+    </div>
+
+    <!-- SCREEN 3: END -->
+    <div class="end-wrap" id="endScreen">
+      <div class="stamp">✓</div>
+      <h2>Interview Complete</h2>
+      <p>Thank you very much, <b id="endCandName">the candidate</b> &amp; well done!!<br>We will now end our recording.</p>
+      <div class="end-actions">
+        <button class="btn btn-primary" id="restartBtn">← Back to Home</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.getElementById('roleLogoImg').src = 'data:image/png;base64,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';
+document.getElementById('welcomeLogoImg').src = document.getElementById('roleLogoImg').src;
+document.getElementById('privacyLogoImg').src = document.getElementById('roleLogoImg').src;
+document.getElementById('instructionsLogoImg').src = document.getElementById('roleLogoImg').src;
+document.getElementById('encourageLogoImg').src = document.getElementById('roleLogoImg').src;
+
+/* ================= Self-Introduction (Part 0 — all roles, sensitive info) ================= */
+const SELF_INTRO_QUESTIONS = [
+  {cat:"Self-Introduction", text:"To begin, could you please give us a brief introduction of yourself? Feel free to share about your personal and family background — for example, your name, marital status, hometown, number of siblings, hobbies, and the like."},
+  {cat:"Self-Introduction", text:"What is your current employment status — are you currently employed or not? Please also share the reason(s) you left your previous job or jobs, if applicable."}
+];
+
+/* ================= Common HR Screening Questions (Part 1 — all roles) ================= */
+const GENERAL_QUESTIONS = [
+  {cat:"Education & Readiness", text:"Have you completed a Bachelor's Degree?"},
+  {cat:"Education & Readiness", text:"Are you remote-ready — do you have your own laptop or desktop, a stable internet connection, and a conducive workspace?"},
+  {cat:"Background & Achievements", text:"Did you receive any academic achievements or merit awards in high school or college? If yes, what were these?"},
+  {cat:"Background & Achievements", text:"Did you have any leadership experience in an organization or club in high school or college? If yes, share the organization or club name and your position."},
+  {cat:"Work Style", text:"Do you use AI tools such as ChatGPT, Copilot, or Claude in your workflow? If yes, how do you use them in your tasks or role?"},
+  {cat:"Fit", text:"Why should we hire you for this position? Please briefly explain."},
+  {cat:"Availability", text:"This role may require work on Saturdays or during peak periods. Are you able to meet these scheduling requirements?"},
+  {cat:"Availability", text:"Are there any recurring personal commitments that could impact your daily attendance or punctuality? If yes, please specify."},
+  {cat:"Availability", text:"How do you manage personal responsibilities to ensure you can give full attention to your work on a daily basis?"},
+  {cat:"Availability", text:"Are you able to render overtime or extended hours when operationally required?"},
+  {cat:"Fit", text:"What specifically caught your attention about this role, and what made you decide to apply?"},
+  {cat:"Fit", text:"What do you know about our company, and what made you want to be part of our team?"},
+  {cat:"Career Goals", text:"Where do you see yourself professionally in the next two to three years, and how does this role fit into that goal?"},
+  {cat:"Career Goals", text:"Do you have any plans to pursue further studies, put up a business, or take on other organizational or personal commitments within this year or the next?"},
+  {cat:"Compensation & Onboarding", text:"What is your expected salary rate or range?"},
+  {cat:"Compensation & Onboarding", text:"If offered the position, how soon can you start?"},
+  {cat:"Compensation & Onboarding", text:"If qualified, do you consent to a background check?"},
+  {cat:"Background & Achievements", text:"What do you consider your most meaningful contribution or achievement from your work or school experience so far?"}
+];
+
+/* ================= Role-specific banks (Part 2) ================= */
+const ROLE_BANKS = {
+  accounting: {
+    label: "Accounting Consultant",
+    letter: "AC",
+    blurb: "Bookkeeping, reconciliation, financial reporting, and client support.",
+    questions: [
+      {cat:"Background & Process", text:"Can you walk us through your end-to-end process in your most recent accounting role, from receiving a transaction to it being reflected in the reports?"},
+      {cat:"Background & Process", text:"Can you walk us through the monthly accounting cycle in your last role, from start to finish?"},
+      {cat:"Systems & Software", text:"What accounting software or systems are you proficient with, and which specific modules have you used — for example accounts payable, accounts receivable, invoicing, purchase orders, bank reconciliation, inventory, or general ledger?"},
+      {cat:"Systems & Software", text:"On a scale of 1 to 10, how would you rate your proficiency in the accounting software you use most? What would it take to move that closer to a 10?"},
+      {cat:"Systems & Software", text:"On a scale of 1 to 10, how fast do you learn new systems or software? Can you give an example?"},
+      {cat:"Systems & Software", text:"Are you comfortable working in Excel or Google Sheets with formulas such as VLOOKUP, SUMIF, or pivot tables? Please describe a report you've built using these."},
+      {cat:"Technical Knowledge", text:"What are your usual source documents when processing disbursements, sales, or expense transactions?"},
+      {cat:"Technical Knowledge", text:"Do you have experience preparing financial statements — balance sheet, profit and loss, cash flow, trial balance? Were these prepared manually or system-generated? Please walk us through your process."},
+      {cat:"Technical Knowledge", text:"Do you have experience with bank reconciliation? Please walk us through your process."},
+      {cat:"Technical Knowledge", text:"Do you have audit or internal audit experience? If not, do you understand how an audit is typically conducted?"},
+      {cat:"Problem-Solving", text:"Tell us about a time you found a discrepancy or an unreconciled item. How did you investigate and resolve it?"},
+      {cat:"Problem-Solving", text:"If a system generates a report that looks incorrect, how would you go about identifying and correcting the issue?"},
+      {cat:"Problem-Solving", text:"If you run into a problem with no documented solution or reference online, how would you go about troubleshooting it?"},
+      {cat:"Problem-Solving", text:"Tell us about a mistake you made at work. What happened, and how did you handle it?"},
+      {cat:"Client & Stakeholder Handling", text:"Tell us about a difficult client, vendor, or partner you've handled. What was the situation, and what did you do?"},
+      {cat:"Client & Stakeholder Handling", text:"How would you explain a financial report or an accounting issue to someone with no accounting background?"},
+      {cat:"Client & Stakeholder Handling", text:"If a client is waiting for a resolution but you don't have an answer yet, how would you manage that communication?"},
+      {cat:"Prioritization & Time Management", text:"How do you prioritize when you're faced with multiple urgent deadlines at the same time?"},
+      {cat:"Prioritization & Time Management", text:"Walk us through how you would handle this: you have a report due today, a client needs urgent support, and management asks for an update within 30 minutes. What would you do first, second, and third?"},
+      {cat:"Leadership & People Management", text:"Have you supervised or led a team before? How many people, and what were your day-to-day responsibilities?"},
+      {cat:"Leadership & People Management", text:"Tell us about a time you had a conflict within your team. How did you handle it?"},
+      {cat:"Process Improvement & Policy", text:"Tell us about a time you identified an inefficient process and improved it. What did you do?"},
+      {cat:"Process Improvement & Policy", text:"Do you have any experience drafting or revising accounting policies or standard operating procedures?"},
+      {cat:"Process Improvement & Policy", text:"If you're working with manual reports or templates, what controls do you put in place to catch errors before they go out?"},
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your professional journey so far? What were your key takeaways or learnings, and what would you like to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"Tell us about a time you had to learn a completely new system or process. How did you adjust?"},
+      {cat:"Career Journey & Self-Reflection", text:"What specific tasks in accounting do you enjoy the most, and why?"},
+      {cat:"Career Journey & Self-Reflection", text:"Based on your experience, what would you consider your strongest technical competency?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific contribution, project, or task from your work experience that you're especially proud of? Please tell us about it."},
+      {cat:"Motivation & Growth", text:"What attracted you to a career in accounting?"},
+      {cat:"Motivation & Growth", text:"Where do you see your accounting career growing, and what skills are you hoping to build in this role?"},
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  payroll: {
+    label: "Payroll Consultant",
+    letter: "PC",
+    blurb: "Client-facing payroll processing, accuracy, and confidentiality under pressure.",
+    questions: [
+      {cat:"Learning Agility & Trainability", text:"Tell me about a time you had to learn something completely new with very little guidance. How did you approach it?"},
+      {cat:"Learning Agility & Trainability", text:"If I give you a payroll process to learn today, how would you make sure you learn it quickly and correctly?"},
+      {cat:"Learning Agility & Trainability", text:"You're learning the current YAHSHUA payroll system, but a new system will soon be introduced. How would you handle learning both at the same time?"},
+      {cat:"Learning Agility & Trainability", text:"You ask if there's a manual or documentation for a task, and your manager says there isn't one. What would you do?"},
+
+      {cat:"Client Handling — Payroll Week Scenario", text:"Scenario: It's Friday afternoon, right in the middle of payroll week. You're juggling several client accounts. At 2:00 PM, an employee from a client company messages you directly, upset — she says ₱500 is missing from her salary and needs it sorted before the day ends.\n\nWhat do you do first, and how would you explain the situation to her?", hint:"Part 1 of 3 in this scenario — the story continues in the next question."},
+      {cat:"Client Handling — Payroll Week Scenario", text:"Continuing the scenario: You check the records and your computation is correct — no error on your end. But at 3:00 PM, the HR/Payroll Officer from that same client calls, insisting the payroll is wrong and won't let it go even after you show them the numbers.\n\nHow do you handle that conversation with the HR Officer?", hint:"Part 2 of 3."},
+      {cat:"Client Handling — Payroll Week Scenario", text:"Continuing further: two other clients now message you with unrelated urgent concerns. It's near payroll cutoff, and one of your bigger clients — more employees, pays more for the service — says they should've been handled first. Someone on their team also asks a payroll policy question you're honestly not sure about.\n\nHow do you prioritize everything happening at once, what do you tell the bigger client, and what do you do about the question you don't know the answer to?", hint:"Part 3 of 3."},
+
+      {cat:"Integrity & Confidentiality", text:"You have access to payroll information, and a friend asks you to disclose another employee's salary. How would you respond?"},
+
+      {cat:"Working with Managers & Hierarchy", text:"Imagine your manager gives you instructions for a task, but partway through, you realize the instructions were actually wrong. How would you raise this with your manager — and what would you do if they insisted they were right simply because they're more senior?"},
+      {cat:"Working with Managers & Hierarchy", text:"Now imagine a different situation: you've proposed an idea you genuinely believe would help the team or a client, but your manager turns it down. How would you handle that, and how do you generally go about communicating ideas or collaborating with leaders and other departments?"},
+
+      {cat:"Resilience & Self-Awareness", text:"Tell me about a mistake you made at work — how you discovered it, what you did afterward, and how management responded."},
+      {cat:"Resilience & Self-Awareness", text:"Looking back on your career, what's the most difficult period you've had to push through? Was there ever a point you thought about quitting, and what kept you going — including through the parts of the job that felt repetitive or draining?"},
+      {cat:"Resilience & Self-Awareness", text:"How do you take criticism or negative feedback, and what work skills or personal qualities do you feel you still need to work on?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your career journey so far — from where you started to where you are now? What were your key takeaways, and what do you still want to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"What specific part of payroll work do you enjoy the most — processing, client handling, reconciliation, or something else — and why?"},
+      {cat:"Career Journey & Self-Reflection", text:"Based on your experience, what would you consider your strongest skill when it comes to payroll accuracy or client handling?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific contribution, project, or situation you handled that you're especially proud of? Please tell us about it."},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in payroll?"},
+      {cat:"Motivation & Growth", text:"Where do you see your payroll career growing, and what skills are you hoping to build in this role?"},
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  sales: {
+    label: "Sales Officer / Consultant",
+    letter: "SO",
+    blurb: "Lead generation, client pitching, objection handling, and field work.",
+    questions: [
+      {cat:"Sales Acumen", text:"What's the difference between marketing and sales, in your view? If we hired you today, what do you think would be the hardest part of joining our sales team?"},
+      {cat:"Handling Rejection & Resilience", text:"If a client gives you negative feedback or declines your offer, how do you handle that? And tell me about a mistake you've made — in school, an internship, or otherwise — that helped you mature."},
+      {cat:"Tools & Adaptability", text:"Give me a real example of how you've used ChatGPT or another AI tool, and how it helped you. Do you have any experience editing videos with AI tools?"},
+      {cat:"Field Work & Flexibility", text:"This role involves regular field visits, including travel to the client's principal office for face-to-face client meetings. Would that be an issue for you?"},
+      {cat:"Self-Improvement & Closing", text:"What's one thing you feel you need to improve on, especially in sales, that we could support you with? And — convince me: why should we choose you over other applicants?"},
+      {cat:"Sales Skills", text:"Say you get a random lead — someone who might be interested but hasn't talked to us yet. Walk me through what you'd actually do, step by step, from that first contact all the way to closing the deal."},
+      {cat:"Sales Skills", text:"How would you go about finding clients for YAHSHUA in the first place — where would you look, who would you talk to, and how would you keep track of everyone you're talking to so nothing falls through the cracks?"},
+      {cat:"Sales Skills", text:"Tell me about a big deal or sales goal you hit — or didn't. What happened, and what would you do differently?", hint:"Ask this version if the candidate has prior sales experience."},
+      {cat:"Sales Skills", text:"Tell me about a time you had to convince someone of something — a professor, a group mate, a customer. How'd you do it, and did it work?", hint:"Fresh-graduate alternate — ask instead of the above if the candidate has no direct sales experience."},
+      {cat:"Sales Skills", text:"Let's say you're demoing our system to a small 20-person company, then later to a 500-person company. Would you pitch it the same way to both? Why or why not?"},
+      {cat:"Sales Skills", text:"Have you sold anything like payroll, HR, or software before? If not — how would you get comfortable enough with our product to sell it confidently?"},
+      {cat:"Sales Skills", text:"If a client says \"your competitor is cheaper,\" what would you say back — without trashing the competitor?"},
+      {cat:"Sales Skills", text:"Tell me about a time a client pushed back on price. How'd you handle it?", hint:"Ask this version if the candidate has prior sales experience."},
+      {cat:"Sales Skills", text:"Let's role-play — I'm a client and I just told you your price is too high compared to someone else. Convince me right now.", hint:"Fresh-graduate alternate — ask instead of the above if the candidate has no direct sales experience."},
+
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your career journey so far — from where you started to where you are now? What were your key takeaways, and what do you still want to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"What part of the sales process do you enjoy the most — prospecting, pitching, negotiating, or closing — and why?"},
+      {cat:"Career Journey & Self-Reflection", text:"Based on your experience, what would you consider your strongest skill as a sales professional?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific deal, campaign, or client relationship you're especially proud of? Please tell us about it."},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in sales?"},
+      {cat:"Motivation & Growth", text:"Where do you see your sales career growing, and what skills are you hoping to build in this role?"},
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  qa: {
+    label: "QA",
+    letter: "QA",
+    blurb: "Test planning, automation, domain/validation judgment, and bug triage for software quality.",
+    questions: [
+      {cat:"Test Planning & Design", text:"Walk us through your process for designing test cases for a new feature — from receiving the requirements to writing the test cases. How do you determine what needs to be tested?"},
+      {cat:"Test Planning & Design", text:"How do you approach identifying edge cases? Can you walk us through an example from a project you've worked on?"},
+      {cat:"Test Planning & Design", text:"What's your process for exploratory testing versus scripted test-case execution? When do you rely on each?"},
+
+      {cat:"Automation & Tools", text:"What test automation tools or frameworks have you used — for example Selenium, Cypress, Playwright, or Postman? Walk us through a test you personally automated — what it does, and why you designed it that way."},
+      {cat:"Automation & Tools", text:"How do you decide which test cases should be automated versus kept manual?"},
+      {cat:"Automation & Tools", text:"If a UI element changes — its selector, type, or layout — what typically happens to your automated tests, and how do you make your scripts resilient to that kind of change?"},
+
+      {cat:"Domain & Validation Judgment", text:"For a form or application that accepts numeric or financial input — such as payroll, billing, or pricing — what kinds of invalid inputs would you typically test for, and why?"},
+      {cat:"Domain & Validation Judgment", text:"When you're given business rules, documentation, or reference values to test against, how do you verify that they're actually accurate before you build your test cases around them?"},
+
+      {cat:"Bug Reporting & Developer Collaboration", text:"How do you write and communicate a bug report to a developer? What information do you always make sure to include?"},
+      {cat:"Bug Reporting & Developer Collaboration", text:"A developer tells you they can't reproduce a bug you reported. How would you handle that situation?"},
+      {cat:"Bug Reporting & Developer Collaboration", text:"Tell us about a time you found a bug that was dismissed or deprioritized by the team, but you believed it should be fixed. What did you do?"},
+
+      {cat:"QA Philosophy & Prioritization", text:"From a QA perspective, is it more important to launch on schedule or delay until it's completely bug-free? How do you personally balance speed versus quality?"},
+      {cat:"QA Philosophy & Prioritization", text:"How do you decide what's high-priority versus low-priority when triaging a list of bugs?"},
+      {cat:"QA Philosophy & Prioritization", text:"Tell us about a time you spotted a flaw in a QA process or testing strategy. How did you raise it with your team?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your career journey so far — from where you started to where you are now? What were your key takeaways, and what do you still want to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"What specific part of QA work do you enjoy the most — test design, automation, exploratory testing, or something else — and why?"},
+      {cat:"Career Journey & Self-Reflection", text:"Based on your experience, what would you consider your strongest skill as a QA professional?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific project, bug, or test case you're especially proud of? Please tell us about it."},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in QA or software testing?"},
+      {cat:"Motivation & Growth", text:"Where do you see your QA career growing, and what skills are you hoping to build in this role?"},
+      {cat:"Motivation & Growth", text:"What do you hope to contribute as a QA here? Give us one thing that would convince us to hire you."},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  fullstack: {
+    label: "Full Stack Developer",
+    letter: "FS",
+    blurb: "Next.js and Django project experience, AI/LLM tooling and integration, and technical leadership.",
+    questions: [
+      {cat:"Core Technical Requirements (Must-Haves)", text:"Do you have hands-on experience with Next.js? Please walk us through a project where you used it — what you built, and which Next.js features you worked with (for example routing, server-side rendering, or API routes)."},
+      {cat:"Core Technical Requirements (Must-Haves)", text:"Do you have hands-on experience with Django? Please walk us through a project where you used it — what you built, and which parts of Django you worked with (for example models, views, REST framework, or authentication)."},
+      {cat:"Core Technical Requirements (Must-Haves)", text:"Do you currently use Claude or Codex in your development work? Walk us through how you use them across your workflow — for example, for planning, writing code, debugging, or testing."},
+      {cat:"Core Technical Requirements (Must-Haves)", text:"Can you explain, in your own words, what a large language model (LLM) is and how it works?"},
+      {cat:"Core Technical Requirements (Must-Haves)", text:"Have you built or contributed to a project that integrates AI or an LLM into an application — such as a chatbot, AI-assisted feature, retrieval-augmented generation (RAG) system, or AI agent? Please walk us through that project — the problem it solved and how the AI/LLM was integrated."},
+
+      {cat:"Background & Technical Experience", text:"Can you walk us through the technical projects you've worked on? For each, tell us your role, the problem it solved, and the tech stack you used."},
+      {cat:"Background & Technical Experience", text:"What was your specific contribution or responsibility on these projects — were you working solo, or as part of a team?"},
+      {cat:"Background & Technical Experience", text:"How do you typically decide on the tech stack or tools to use for a new project?"},
+
+      {cat:"Development Workflow & Problem-Solving", text:"Can you walk us through your general development workflow — from understanding requirements to deployment?"},
+      {cat:"Development Workflow & Problem-Solving", text:"Tell us about a challenging technical problem you've encountered — such as a performance issue, bug, or system limitation. How did you approach and resolve it?"},
+      {cat:"Development Workflow & Problem-Solving", text:"Do you have experience with deployment or cloud hosting (for example AWS, DigitalOcean, Vercel, or similar)? Can you walk us through that experience?"},
+      {cat:"Development Workflow & Problem-Solving", text:"Are you familiar with database optimization practices such as indexing, caching, or query optimization? Can you explain how or when you've applied these?"},
+      {cat:"Development Workflow & Problem-Solving", text:"Do you have experience with containerization tools like Docker? What's your understanding of why or when it's used?"},
+      {cat:"Development Workflow & Problem-Solving", text:"Tell us about a time you had to learn a new technology, tool, or framework quickly. How did you approach it?"},
+
+      {cat:"Leadership & Team Collaboration", text:"Have you held a leadership role, or led a team or project before? Can you walk us through that experience?"},
+      {cat:"Leadership & Team Collaboration", text:"What do you find most challenging about leading or collaborating with a team of developers?"},
+      {cat:"Leadership & Team Collaboration", text:"How do you handle situations where you disagree with a teammate's or supervisor's technical decision?"},
+
+      {cat:"Career Motivation & Growth", text:"What inspired you to pursue a career in programming or software development?"},
+      {cat:"Career Motivation & Growth", text:"Looking further ahead — where do you see yourself in the next five to ten years, particularly in terms of technical or leadership growth?"},
+      {cat:"Career Motivation & Growth", text:"What kind of impact do you hope to make through the work you build?"},
+      {cat:"Career Motivation & Growth", text:"Is there anyone in the tech industry who inspires you? What is it about them that stands out to you?"},
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  administrative: {
+    label: "Administrative Staff",
+    letter: "AS",
+    blurb: "Office operations, document and facilities management, and HR/payroll administrative support. Open to fresh graduates.",
+    questions: [
+      {cat:"Office Administration & Organization", text:"Do you have any experience with day-to-day office administration or supporting office operations — whether through work, an internship, or a school organization? Walk us through what that involved."},
+      {cat:"Office Administration & Organization", text:"How do you typically stay organized when you're juggling multiple ongoing tasks or requests at once?"},
+
+      {cat:"Document & Records Management", text:"Do you have experience organizing or maintaining documents and records, physical or digital? What system or process did you use to keep things organized and easy to find?"},
+      {cat:"Document & Records Management", text:"If you were asked to set up a simple, clear filing system for a busy office, how would you approach it?"},
+
+      {cat:"Facilities & Resource Coordination", text:"Have you had any experience monitoring or requesting office supplies, equipment, or facilities needs? How did you keep track of what needed replenishing or attention?"},
+      {cat:"Facilities & Resource Coordination", text:"If a facilities issue comes up — say, a broken aircon or a delayed supplier delivery — and you can't resolve it immediately, how would you handle it?"},
+
+      {cat:"Cross-Department & External Coordination", text:"Have you coordinated with different departments or external vendors/suppliers before? Can you walk us through an example?"},
+      {cat:"Cross-Department & External Coordination", text:"How would you handle a situation where two departments need your help at the same time, and both requests are urgent?"},
+
+      {cat:"HR, Payroll & Compliance Support", text:"Do you have any background or exposure to HR or payroll-related administrative support — such as maintaining 201 files, assisting with attendance records, or helping process documents? If not, how comfortable are you learning these processes?"},
+      {cat:"HR, Payroll & Compliance Support", text:"Why are you interested in a role that involves supporting HR, payroll, or compliance functions specifically?"},
+
+      {cat:"Confidentiality & Integrity", text:"This role may expose you to confidential information, such as employee records or payroll details. How do you personally ensure sensitive information stays confidential?"},
+      {cat:"Confidentiality & Integrity", text:"Tell us about a time you were trusted with sensitive or confidential information — at work, school, or elsewhere. How did you handle it?"},
+
+      {cat:"Tools & Technology", text:"How comfortable are you with Microsoft Office and Google Workspace tools (e.g., Excel/Sheets, Word/Docs, Calendar)? Can you give an example of how you've used them?"},
+      {cat:"Tools & Technology", text:"Have you used any other office or productivity tools — like scheduling apps, ticketing systems, or shared drives? Walk us through that experience."},
+
+      {cat:"Adaptability & Event Support", text:"Have you helped organize or support a meeting, training, or company event before? What was your role in making it run smoothly?"},
+      {cat:"Adaptability & Event Support", text:"Tell us about a time your day's priorities suddenly shifted or an unexpected task came up. How did you adjust?"},
+
+      {cat:"Communication & Interpersonal Skills", text:"How would you describe your communication style when coordinating with different people — coworkers, managers, or external contacts?"},
+      {cat:"Communication & Interpersonal Skills", text:"Tell us about a time you had to communicate a delay, a \"no,\" or difficult news to someone at work or school. How did you handle it?"},
+
+      {cat:"Motivation & Growth", text:"What draws you to an administrative or office support role?"},
+      {cat:"Motivation & Growth", text:"Where do you see yourself growing in the next few years — is there a particular area, such as HR, payroll, or office management, that interests you most?"},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"This role requires reporting onsite in Uptown, Cagayan de Oro City. Are you amenable to working onsite at this location?"},
+      {cat:"Closing Questions", text:"What or who is your biggest motivation in your career?"},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  hrofficer: {
+    label: "HR Officer",
+    letter: "HR",
+    blurb: "End-to-end recruitment focus, with broader HR generalist exposure as an advantage. Open to fresh graduates.",
+    questions: [
+      {cat:"End-to-End Recruitment (Core Focus)", text:"Walk us through your understanding of, or experience with, the end-to-end recruitment process — from sourcing candidates to onboarding. Where have you been involved, even if just partially?"},
+      {cat:"End-to-End Recruitment (Core Focus)", text:"If you had to source candidates for an open position with no applicants yet, where would you look and how would you go about it?"},
+      {cat:"End-to-End Recruitment (Core Focus)", text:"How would you screen a resume or a candidate to determine if they're worth moving forward to an interview?"},
+      {cat:"End-to-End Recruitment (Core Focus)", text:"Have you conducted or assisted in conducting an interview before? Walk us through what that was like, or how you'd approach it if you haven't yet."},
+      {cat:"End-to-End Recruitment (Core Focus)", text:"How would you handle a situation where a candidate ghosts you, declines an offer, or withdraws late in the process?"},
+
+      {cat:"HR Generalist Exposure (Advantage)", text:"Aside from recruitment, do you have any exposure to other areas of HR — such as employee relations, onboarding, compensation and benefits, or training? Tell us about that experience."},
+
+      {cat:"Labor Law & Compliance Knowledge", text:"What do you know about Philippine labor laws and government-mandated benefits — such as SSS, PhilHealth, and Pag-IBIG?"},
+      {cat:"Labor Law & Compliance Knowledge", text:"What do you know about DOLE requirements relevant to hiring — such as required documents, or the difference between probationary and regular employment?"},
+
+      {cat:"Employee Relations & Documentation", text:"Have you handled or observed how employee concerns or complaints get addressed? How would you approach a sensitive employee concern?"},
+      {cat:"Employee Relations & Documentation", text:"Do you have experience maintaining employee records or 201 files? What would you consider important in keeping these accurate and organized?"},
+
+      {cat:"HR Systems & Tools", text:"How proficient are you with Microsoft Office tools? Can you give an example of how you've used them for HR-related or school-related work?"},
+      {cat:"HR Systems & Tools", text:"Do you have experience using any HR Information System (HRIS) or applicant tracking system (ATS)? If not, how comfortable are you learning a new system?"},
+      {cat:"HR Systems & Tools", text:"Do you use any AI tools in your work or study? How have you used them, or how do you see them being useful in HR?"},
+
+      {cat:"Confidentiality & Integrity", text:"HR work often involves confidential information — salaries, personal records, employee concerns. How do you ensure this stays confidential?"},
+      {cat:"Confidentiality & Integrity", text:"Tell us about a time you were trusted with sensitive information. How did you handle it?"},
+
+      {cat:"Communication & Organization", text:"Recruitment and HR work often means juggling multiple candidates, employees, or requests at once. How do you stay organized and keep track of everything?"},
+      {cat:"Communication & Organization", text:"Tell us about a time you had to communicate a difficult message to a candidate or employee — such as a rejection or a policy explanation. How did you handle it?"},
+
+      {cat:"Motivation & Growth", text:"What draws you to a career in HR? What facet interests you the most?"},
+      {cat:"Motivation & Growth", text:"Among the different facets of Human Resources, which areas interest you the most? Please rank your top three (3) in order of preference, with 1 being the area you are most passionate about and would like to pursue in your career.", hint:"Example: 1. Recruitment & Talent Acquisition, 2. Employee & Labor Relations, 3. Compensation & Benefits"},
+      {cat:"Motivation & Growth", text:"Where do you see yourself growing within HR in the next few years?"},
+
+      {cat:"Closing Questions", text:"This role is based in Cagayan de Oro City with a hybrid work arrangement. Are you amenable to this setup?"},
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"What or who is your biggest motivation in your career?"},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  compliance: {
+    label: "Compliance Officer",
+    letter: "CO",
+    blurb: "Government filings, statutory remittances, BIR/SEC/LGU compliance, and audit support.",
+    questions: [
+      {cat:"Background & Process", text:"Walk us through your compliance-related work experience so far — which government agencies have you personally coordinated with (BIR, SEC, LGU, SSS, PhilHealth, Pag-IBIG), and what exactly was your role versus tasks handled by someone else, like a bookkeeper or accountant?"},
+      {cat:"Background & Process", text:"Of the transactions you've handled, which ones did you personally prepare and file yourself, and which ones did you only review, compile, or assist with?"},
+
+      {cat:"Tax Filing & BIR Compliance", text:"Have you personally prepared and filed a BIR return before? Walk us through your process, and let us know whether you used EFPS, eBIRForms, or both."},
+      {cat:"Tax Filing & BIR Compliance", text:"Can you walk us through the process of amending a previously filed return? Have you handled this before?"},
+      {cat:"Tax Filing & BIR Compliance", text:"How do you stay updated on changing BIR rules, deadlines, and other government requirements?"},
+
+      {cat:"Statutory Remittances", text:"Walk us through how you would process monthly statutory contributions and remittances — SSS, PhilHealth, and Pag-IBIG — from extracting the data to filing and paying online."},
+      {cat:"Statutory Remittances", text:"Have you experienced a delay in filing a return or remitting a statutory payment? What caused it, what did you do, and who ended up shouldering any penalty?"},
+
+      {cat:"BIR LOA & Audit Experience", text:"Have you handled a BIR Letter of Authority (LOA) case? Walk us through what you did, from receiving it to how it was resolved."},
+      {cat:"BIR LOA & Audit Experience", text:"Do you have internal or external audit experience? Tell us about your role — were you the one conducting the audit, or were you the one being audited?"},
+      {cat:"BIR LOA & Audit Experience", text:"If you were asked to audit an entire process end-to-end — not just review one transaction — where would you start, and how would you approach it?"},
+
+      {cat:"Business Registration & Legal Documents", text:"Do you have experience with business registration or permit processing — for example LGU business permits, barangay clearances, or SEC filings? What exactly did you handle?"},
+      {cat:"Business Registration & Legal Documents", text:"Have you handled other compliance-related legal documents, such as contracts, secretary's certificates, or company profiles? Please describe your involvement."},
+
+      {cat:"Systems & Tools", text:"What accounting or compliance-related systems have you used — for example QuickBooks, Xero, SAP, or a company-built system? On a scale of 1 to 10, how would you rate your proficiency, and what would help you move closer to a 10?"},
+      {cat:"Systems & Tools", text:"How comfortable are you using online government portals such as eFPS, BIR eServices, and the SSS, PhilHealth, or Pag-IBIG online systems?"},
+      {cat:"Systems & Tools", text:"How familiar are you with everyday work tools like Excel, Google Workspace (Docs, Sheets, Forms), and communication platforms such as Viber, Telegram, or Notion?"},
+
+      {cat:"Prioritization & Deadline Management", text:"Scenario: within the same week, a client's VAT return, a SEC AFS deadline, and a mayor's permit renewal are all due. How would you decide what to prioritize first, and what would you do about the rest?"},
+      {cat:"Prioritization & Deadline Management", text:"If you discover today that a filing due tomorrow still has incomplete records, what would you do?"},
+
+      {cat:"Client Communication & Judgment", text:"How would you explain to a client that they may face a penalty because of a missed deadline or an error — especially if it's your first time working with them and trust hasn't been built yet?"},
+      {cat:"Client Communication & Judgment", text:"If a client asks you to under-declare income or omit information on a filing, how would you respond?"},
+      {cat:"Client Communication & Judgment", text:"If a client understands the risks you've explained but still insists on pushing through with something questionable, how would you handle that?"},
+
+      {cat:"Multi-Client Handling", text:"This role involves supporting multiple client accounts at once, each with their own deadlines and requirements. How do you stay organized and make sure nothing falls through the cracks?"},
+      {cat:"Multi-Client Handling", text:"Handling clients is different from handling colleagues or subordinates — clients can be more emotional or push back harder. How do you prepare yourself to handle that kind of pressure professionally?"},
+
+      {cat:"Process Improvement", text:"What controls or daily practices would you put in place to help a company avoid compliance violations or penalties?"},
+      {cat:"Process Improvement", text:"Tell us about a mistake you made in filing or compliance work. What happened, and how did you fix it?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your career journey so far — from where you started to where you are now? What were your key takeaways, and what do you still want to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"What specific part of compliance work do you enjoy the most — tax filing, statutory remittances, audits, or client handling — and why?"},
+      {cat:"Career Journey & Self-Reflection", text:"Based on your experience, what would you consider your strongest skill in compliance or audit work?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific contribution, project, or filing you handled that you're especially proud of? Please tell us about it."},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in compliance, tax, or audit work?"},
+      {cat:"Motivation & Growth", text:"Where do you see your compliance career growing, and what skills are you hoping to build in this role?"},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  fieldtech: {
+    label: "Field Technical Staff",
+    letter: "FT",
+    blurb: "Device deployment, installation, networking, and on-site technical support at client locations.",
+    questions: [
+      {cat:"Background & Work History", text:"Walk us through your career path so far — the roles you've held, and how they connect to this Field Technical Staff position."},
+      {cat:"Background & Work History", text:"Walk us through your work history and the reasons behind any job changes you've made along the way."},
+      {cat:"Background & Work History", text:"There are several paths within IT — help desk, networking, software, field support, and more. What draws you specifically to field deployment and on-site technical work?"},
+
+      {cat:"Networking & Connectivity", text:"Walk us through the most advanced network configuration you have personally set up yourself — not just something you learned about, but something you physically configured."},
+      {cat:"Networking & Connectivity", text:"Describe a time you had to troubleshoot a network outage or connectivity issue. What did you check on the switch or router to isolate the cause?"},
+      {cat:"Networking & Connectivity", text:"Can you describe your hands-on experience working with VPNs — what tool or protocol did you use, and what was your role?"},
+      {cat:"Networking & Connectivity", text:"If a biometric time-and-attendance device at a client site is registering punches but not syncing data to the server, what network-level checks would you perform first?"},
+
+      {cat:"Hardware, Electronics & Device Support", text:"Describe the most complex hardware issue you've diagnosed — for example a motherboard, power supply, or wiring problem. What were the symptoms, and how did you confirm the root cause?"},
+      {cat:"Hardware, Electronics & Device Support", text:"Have you physically installed or configured a biometric attendance device before? If not, how quickly do you think you could learn, and what would your learning approach look like?"},
+      {cat:"Hardware, Electronics & Device Support", text:"Do you have hands-on CCTV installation experience? Walk us through a setup you completed — what equipment, how many cameras, how it was wired, and the biggest issue you encountered."},
+      {cat:"Hardware, Electronics & Device Support", text:"Tell us about a time you had to resolve an equipment failure quickly, with someone actively waiting on the fix."},
+      {cat:"Hardware, Electronics & Device Support", text:"Have you handled the proper disposal or decommissioning of old devices or equipment before? Walk us through your process for that."},
+
+      {cat:"Remote Support & Tools", text:"What remote support tools have you used — for example AnyDesk, TeamViewer, or similar? How quickly do you think you could adapt to a tool you're less familiar with?"},
+      {cat:"Remote Support & Tools", text:"Describe the most technically complex remote support session you've handled. What was the issue, and how did you resolve it without being on-site?"},
+      {cat:"Remote Support & Tools", text:"Has any programming, scripting, or software background you have ever helped you solve a hardware or networking issue? Give a specific example."},
+
+      {cat:"Field Work & Independence", text:"Do you hold a valid driver's license, and are you comfortable driving a 4-wheel vehicle to client sites regularly, including on unfamiliar roads or in tight parking situations?"},
+      {cat:"Field Work & Independence", text:"Walk us through a time you planned and carried out a client or site visit completely on your own, from preparation to execution."},
+      {cat:"Field Work & Independence", text:"This role may require occasional travel outside the city, or investing your own time or money in training. How do you generally approach that kind of requirement?"},
+      {cat:"Field Work & Independence", text:"If you were sent alone to install or configure a device at a client site and ran into a problem you couldn't solve with what you had on hand, what would you do?"},
+      {cat:"Field Work & Independence", text:"This role requires being physically fit and willing to travel for on-site support. Are you comfortable with that, and is there anything about your availability or physical condition we should know?"},
+
+      {cat:"Communication & Documentation", text:"Field work often means explaining technical issues to non-technical people. Give an example of a concept you had to explain to someone with little technical background, and how you made it click for them."},
+      {cat:"Communication & Documentation", text:"What does good equipment or device documentation look like to you? What information would you record, and how would you keep it updated?"},
+      {cat:"Communication & Documentation", text:"After completing a device installation or repair at a client site, what would your post-visit report include, and how would you submit it?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"Tell us about a significant mistake you made in your technical work. What happened, and how did you fix it?"},
+      {cat:"Career Journey & Self-Reflection", text:"What specific part of field technical work do you enjoy the most — networking, hardware repair, device deployment, or client-facing support — and why?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific project, installation, or fix you're especially proud of? Please tell us about it."},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in IT support, networking, or field technical work?"},
+      {cat:"Motivation & Growth", text:"Where do you see your technical career growing, and what skills are you hoping to build in this role?"},
+
+      {cat:"Closing Questions", text:"If we hire you, what would you consider a successful first 60 days in this role?"},
+      {cat:"Closing Questions", text:"Is there anything in your work history or background you'd like to clarify or add context to before we wrap up?"},
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  cpa: {
+    label: "Certified Public Accountant (CPA)",
+    letter: "CPA",
+    blurb: "Financial reporting, tax and BIR compliance, and audit — combining accounting and compliance expertise.",
+    questions: [
+      {cat:"Background & Process", text:"Walk us through your end-to-end accounting and compliance process in your most recent role — from recording a transaction, to reporting, to tax filing."},
+      {cat:"Background & Process", text:"Are you a licensed CPA? If not yet, what is your current status — for example, a board passer, awaiting oath-taking, or currently under review?"},
+
+      {cat:"Financial Statements & Technical Knowledge", text:"Do you have experience preparing financial statements — balance sheet, profit and loss, cash flow, trial balance? Were these system-generated or manual, and can you walk us through your process?"},
+      {cat:"Financial Statements & Technical Knowledge", text:"Do you have experience with bank reconciliation? Please walk us through your process."},
+      {cat:"Financial Statements & Technical Knowledge", text:"What are your usual source documents when processing disbursements, sales, or expense transactions?"},
+      {cat:"Financial Statements & Technical Knowledge", text:"Walk us through your month-end or year-end closing process — what accounts do you typically review or adjust before finalizing the books?"},
+      {cat:"Financial Statements & Technical Knowledge", text:"Are you familiar with Philippine Financial Reporting Standards (PFRS)? Can you give an example of how you applied a specific standard in your work?"},
+
+      {cat:"Tax & BIR Compliance", text:"Have you personally prepared and filed BIR returns before — for example VAT, withholding tax, or income tax? Walk us through your process, and let us know if you used EFPS, eBIRForms, or both."},
+      {cat:"Tax & BIR Compliance", text:"Can you walk us through the process of amending a previously filed return? Have you handled this before?"},
+      {cat:"Tax & BIR Compliance", text:"Have you handled a BIR Letter of Authority (LOA) case, or coordinated statutory remittances such as SSS, PhilHealth, or Pag-IBIG? Walk us through your involvement."},
+
+      {cat:"Audit Experience", text:"Do you have internal or external audit experience? Tell us about your role — were you the one conducting the audit, or the one being audited?"},
+      {cat:"Audit Experience", text:"If you were asked to audit an entire process end-to-end — not just review one transaction — where would you start, and how would you approach it?"},
+      {cat:"Audit Experience", text:"Walk us through how you would plan an audit engagement — from understanding the client's business to deciding which areas need the closest attention."},
+      {cat:"Audit Experience", text:"Have you prepared or reviewed audit working papers before? What do you make sure to include so they hold up under review?"},
+      {cat:"Audit Experience", text:"If you found a significant audit finding or discrepancy, how would you communicate it to the client or to management?"},
+
+      {cat:"Systems & Tools", text:"What accounting or compliance-related systems have you used — for example QuickBooks, Xero, SAP, or eFPS/BIR eServices? On a scale of 1 to 10, how would you rate your proficiency, and what would help you move closer to a 10?"},
+      {cat:"Systems & Tools", text:"Are you comfortable working in Excel or Google Sheets with formulas such as VLOOKUP, SUMIF, or pivot tables? Please describe a report you've built using these."},
+
+      {cat:"Problem-Solving & Judgment", text:"Tell us about a time you found a discrepancy or an unreconciled item. How did you investigate and resolve it?"},
+      {cat:"Problem-Solving & Judgment", text:"If a client asks you to under-declare income, omit information on a filing, or make a report look better than it actually is, how would you respond?"},
+      {cat:"Problem-Solving & Judgment", text:"Tell us about a mistake you made in your accounting or compliance work. What happened, and how did you fix it?"},
+
+      {cat:"Client & Stakeholder Handling", text:"How would you explain a financial report, or a compliance issue such as a penalty or missed deadline, to a client or stakeholder with no accounting background?"},
+      {cat:"Client & Stakeholder Handling", text:"This role may involve supporting multiple clients or accounts with competing deadlines. How do you stay organized and make sure nothing falls through the cracks?"},
+
+      {cat:"Prioritization & Time Management", text:"Walk us through how you would handle this: you have a financial report due today, a client needs urgent support, and a tax filing deadline is tomorrow. What would you do first, second, and third?"},
+
+      {cat:"Process Improvement & Policy", text:"Tell us about a time you identified an inefficient process or a compliance risk and improved it, or what controls you would put in place to help prevent errors or violations before they happen."},
+
+      {cat:"Leadership & People Management", text:"Have you supervised or led a team before? How many people, and what were your day-to-day responsibilities?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your professional journey so far? What were your key takeaways, and what do you still want to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific contribution, project, or engagement from your work experience that you're especially proud of? Please tell us about it."},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in accounting and compliance, and where do you see it growing from here?"},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  training: {
+    label: "Training Officer",
+    letter: "TO",
+    blurb: "Training needs analysis, program design and facilitation, and learning evaluation under HR.",
+    questions: [
+      {cat:"Needs Analysis & Program Design", text:"Tell us about a time you identified a training need that wasn't initially obvious. How did you validate that training — and not another solution — was the right intervention?"},
+      {cat:"Needs Analysis & Program Design", text:"Walk us through one training program you personally owned from start to finish — from identifying the business problem, conducting the training needs analysis, designing the curriculum, facilitating the sessions, measuring effectiveness, and improving the program afterward. If you had to do it again today, what would you do differently?"},
+
+      {cat:"Facilitation & Delivery", text:"Describe the most challenging training session you've facilitated. What made it difficult, and how did you keep your learners engaged and still achieve the learning objectives?"},
+
+      {cat:"Evaluation & Reporting", text:"How do you measure whether a training program was truly successful? Tell us about a time your evaluation showed the training needed improvement."},
+      {cat:"Evaluation & Reporting", text:"What information do you consider essential in a post-training report, and how have your reports influenced management decisions?"},
+
+      {cat:"Tools & Innovation", text:"Can you give us a real example of how you've used AI or other digital tools to improve a training program or make your work more efficient? What was the outcome?"},
+
+      {cat:"Prioritization & Time Management", text:"Imagine you're handling onboarding, compliance training, and leadership development at the same time, all with overlapping deadlines. How would you prioritize and manage everything without compromising quality?"},
+
+      {cat:"Stakeholder Management", text:"Tell us about a situation where a manager requested a specific training, but you disagreed with the proposed solution. How did you handle that conversation?"},
+
+      {cat:"Initiative & Ownership", text:"Describe a learning initiative you took ownership of without being instructed to. Why did you pursue it, and what impact did it have?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your career journey so far in training and development? What were your key takeaways, and what do you still want to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"What specific part of training and development work do you enjoy the most — needs analysis, curriculum design, facilitation, or evaluation — and why?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in training and development?"},
+      {cat:"Motivation & Growth", text:"Where do you see your training and development career growing, and what skills are you hoping to build in this role?"},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  driver: {
+    label: "Liaison / Company Driver",
+    letter: "LD",
+    blurb: "Company vehicle operation, liaison transactions with external offices, and vehicle upkeep.",
+    questions: [
+      {cat:"Driving Experience & Background", text:"Can you walk us through your professional driving experience, including the types of vehicles you have handled and the passengers you typically transported?"},
+      {cat:"Driving Experience & Background", text:"Have you worked as a company, family, school, or professional driver before? What were your regular responsibilities aside from driving?"},
+      {cat:"Driving Experience & Background", text:"What experience do you have with long-distance driving, and what are some of the longest routes or trips you have personally handled?"},
+
+      {cat:"Local Route Knowledge", text:"How familiar are you with routes within Cagayan de Oro, Misamis Oriental, and nearby areas? How would you handle heavy traffic, road closures, or an unfamiliar destination?"},
+
+      {cat:"Liaison & Errand Handling", text:"What experience do you have handling company errands or liaison transactions with government agencies, banks, suppliers, clients, or other external offices? Please give an example of a transaction you personally handled."},
+      {cat:"Liaison & Errand Handling", text:"Suppose you are already at a government office processing an urgent company transaction and discover that a required document or signature is missing. How would you handle the situation?"},
+
+      {cat:"Vehicle Inspection & Maintenance", text:"Before using a company vehicle for the day, what specific things would you inspect to make sure the vehicle is safe and ready for use?"},
+      {cat:"Vehicle Inspection & Maintenance", text:"What basic vehicle troubleshooting and maintenance can you personally perform, and how would you handle situations such as a flat tire, battery issue, overheating, or a warning light while on the road?"},
+      {cat:"Vehicle Inspection & Maintenance", text:"How would you monitor and keep track of a company vehicle's mileage, oil changes, preventive maintenance schedule, registration renewal, repairs, and other maintenance requirements?"},
+
+      {cat:"Vehicle Safety & Emergency Handling", text:"Suppose you are scheduled to transport an employee or company guest for an important appointment, but you notice a vehicle issue that could affect safety. How would you handle the situation?"},
+      {cat:"Vehicle Safety & Emergency Handling", text:"If you were involved in a road accident while transporting an employee, officer, client, or company guest, what would be your immediate course of action?"},
+
+      {cat:"Confidentiality & Professionalism", text:"As a company driver and liaison, you may come across confidential documents, conversations, transactions, or company information. How would you handle this information?"},
+      {cat:"Confidentiality & Professionalism", text:"How would you communicate and interact professionally with employees, company officers, clients, or guests that you are assigned to transport or assist?"},
+      {cat:"Confidentiality & Professionalism", text:"How would you respond if your supervisor or another authorized company officer corrected you regarding your driving, vehicle handling, or the way you completed an assigned task?"},
+
+      {cat:"Property & Document Handling", text:"If you are entrusted with important company documents, cash, checks, equipment, or other company property for delivery or processing, how would you make sure these are properly handled and accounted for?"},
+
+      {cat:"Coordination & Prioritization", text:"Suppose you have several assignments at the same time: an employee needs transportation for an important appointment, a company document must be submitted before an office closes, and one company vehicle has a maintenance concern. How would you prioritize and coordinate these responsibilities?"},
+
+      {cat:"Schedule & Flexibility", text:"This role may require early departures, extended hours, waiting during appointments, fieldwork, long-distance travel, or unexpected trips. How flexible are you with this type of work schedule?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"Can you walk us through your career journey so far as a driver or liaison? What were your key takeaways, and what do you still want to learn more about?"},
+      {cat:"Career Journey & Self-Reflection", text:"Tell us about a mistake you made while driving or handling a liaison task. What happened, and how did you fix it?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+
+      {cat:"Motivation & Growth", text:"What made you choose driving and liaison work as your career path?"},
+      {cat:"Motivation & Growth", text:"Where do you see yourself growing in this type of role, and what skills would you like to develop further?"},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  accountingfg: {
+    label: "Accounting Consultant (FG)",
+    letter: "FG",
+    blurb: "Entry-level accounting role for fresh graduates — foundational knowledge, OJT exposure, and learning aptitude.",
+    questions: [
+      {cat:"Academic Background & Foundation", text:"What is your accounting-related degree, and which subjects or units did you find most interesting or perform strongest in?"},
+      {cat:"Academic Background & Foundation", text:"Walk us through what you learned about the accounting cycle in school — from recording a transaction to it being reflected in the financial statements."},
+
+      {cat:"OJT / Internship & Practical Exposure", text:"Did you have an OJT, internship, or practicum related to accounting or finance? If yes, walk us through the tasks you were given and what you learned from the experience."},
+      {cat:"OJT / Internship & Practical Exposure", text:"If you haven't had hands-on accounting work experience yet, what accounting-related tasks or projects — school-based or otherwise — come closest to real work, and what did you take away from them?"},
+
+      {cat:"Systems & Software", text:"What accounting software or systems were you exposed to in school or during your OJT — for example QuickBooks, SAP, or a school-provided system?"},
+      {cat:"Systems & Software", text:"On a scale of 1 to 10, how fast do you learn new systems or software? Can you give an example, even from school or a personal project?"},
+      {cat:"Systems & Software", text:"Are you comfortable working in Excel or Google Sheets with formulas such as VLOOKUP, SUMIF, or pivot tables? Please describe how you've used these — for a school project, thesis, or personal use."},
+
+      {cat:"Technical Knowledge", text:"What are the usual source documents for recording disbursements, sales, or expense transactions?"},
+      {cat:"Technical Knowledge", text:"Walk us through how you would prepare a basic set of financial statements — balance sheet, profit and loss, cash flow, and trial balance — based on what you learned in school."},
+      {cat:"Technical Knowledge", text:"Can you explain what bank reconciliation is, and walk us through the general process?"},
+      {cat:"Technical Knowledge", text:"Based on what you learned in school, what is the purpose of an audit, and what would you expect an auditor to look for?"},
+
+      {cat:"Problem-Solving", text:"If you were given a report or a set of numbers that didn't balance, how would you go about finding the error?"},
+      {cat:"Problem-Solving", text:"If you ran into an accounting problem with no clear answer in your notes or textbook, how would you go about figuring it out?"},
+      {cat:"Problem-Solving", text:"Tell us about a time you made a mistake in school — a project, an exam, or an org task — and how you handled it."},
+
+      {cat:"Client & Stakeholder Handling", text:"How would you explain a basic financial report or accounting concept to someone with no accounting background — for example a family member or a friend?"},
+      {cat:"Client & Stakeholder Handling", text:"If you were asked a question you didn't know the answer to right away, how would you handle that conversation?"},
+
+      {cat:"Prioritization & Time Management", text:"How do you usually manage multiple deadlines at the same time — for example several exams, requirements, or projects due close together?"},
+      {cat:"Prioritization & Time Management", text:"Walk us through how you would handle this: you have a report due today, a colleague needs urgent help, and your supervisor asks for an update within 30 minutes. What would you do first, second, and third?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"What led you to take up accounting, and what part of it do you enjoy the most?"},
+      {cat:"Career Journey & Self-Reflection", text:"Tell us about a time you had to learn something completely new and unfamiliar — a subject, a tool, or a skill. How did you approach it?"},
+      {cat:"Career Journey & Self-Reflection", text:"Based on your academic and OJT experience so far, what would you consider your strongest area in accounting?"},
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team do you think would help you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a specific project, requirement, or accomplishment from school or OJT that you're especially proud of? Please tell us about it."},
+
+      {cat:"Motivation & Growth", text:"What attracted you to a career in accounting?"},
+      {cat:"Motivation & Growth", text:"Where do you see your accounting career growing in the next few years, and what skills are you hoping to build early on?"},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  },
+
+  trainingassoc: {
+    label: "Training Associate",
+    letter: "TA",
+    blurb: "Entry-level L&D support — training prep, facilitation assistance, and documentation, with a growth path to Training Officer.",
+    questions: [
+      {cat:"Interest & Fit", text:"What interests you about a Training Associate role, and why do you want to build your career in Learning & Development?"},
+
+      {cat:"Training Scenario / Problem-Solving", text:"You notice employees repeatedly making the same mistakes in a process. How would you determine whether the issue requires training or something else?"},
+
+      {cat:"Organization & Prioritization", text:"You have a training tomorrow, incomplete attendance records, materials that need proofreading, and an urgent request from another team. How would you prioritize your tasks?"},
+
+      {cat:"Training Preparation", text:"Walk us through how you would prepare for a training session — from receiving the topic to making sure everything is ready before participants arrive."},
+
+      {cat:"Facilitation & Communication", text:"You are asked to facilitate a 10-minute activity for a group that is quiet and not participating. What would you do to engage them?"},
+
+      {cat:"Technical Troubleshooting", text:"Five minutes before a virtual training, the facilitator cannot share their screen. What would you do to troubleshoot the issue while keeping the session on track?"},
+
+      {cat:"Data & Documentation", text:"You are given attendance records and participant evaluations with missing or inconsistent information. How would you organize, check, and report the data?"},
+
+      {cat:"AI & Technology", text:"Your Training Officer asks you to use ChatGPT to help create a training activity. How would you use AI while ensuring the output is accurate, appropriate, and aligned with the training objective?"},
+
+      {cat:"Learning Agility", text:"You are assigned a task using a tool or process you have never used before, and you have limited guidance. What would you do?"},
+
+      {cat:"Growth & Flexibility", text:"This role may involve facilitating trainings, supporting different teams, and eventually growing into a Training Officer role. How comfortable are you with being moved outside your initial responsibilities to develop your skills?"},
+
+      {cat:"Career Journey & Self-Reflection", text:"What type of work environment or team helps you perform at your best?"},
+      {cat:"Career Journey & Self-Reflection", text:"Is there a project, task, or activity you're especially proud of — from school, an internship, or previous work — that relates to training or people development? Please tell us about it."},
+
+      {cat:"Closing Questions", text:"What are your non-negotiables for this role? For example, salary expectations (e.g., should be at least ₱___), or schedule requirements (e.g., no work on Sundays), and so on."},
+      {cat:"Closing Questions", text:"Lastly, how would you describe your personality or character? What would you say is your greatest personal trait?"}
+    ]
+  }
+};
+
+/* ================= State ================= */
+let deck = [];
+let current = 0;
+let candidateName = "";
+let selectedRoleKey = null;
+
+const roleScreen = document.getElementById('roleScreen');
+const setupScreen = document.getElementById('setupScreen');
+const flasherScreen = document.getElementById('flasherScreen');
+const endScreen = document.getElementById('endScreen');
+const sidebar = document.getElementById('sidebar');
+const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+const topMeta = document.getElementById('topMeta');
+
+/* ---- Build role picker cards ---- */
+const roleGrid = document.getElementById('roleGrid');
+Object.keys(ROLE_BANKS).forEach(key => {
+  const r = ROLE_BANKS[key];
+  const card = document.createElement('div');
+  card.className = 'role-card';
+  card.innerHTML = `<div class="rletter">${r.letter}</div><h3>${r.label}</h3><p>${r.blurb}</p><div class="qcount">${r.questions.length} role-specific questions</div>`;
+  card.addEventListener('click', () => selectRole(key));
+  roleGrid.appendChild(card);
+});
+
+function selectRole(key){
+  selectedRoleKey = key;
+  const r = ROLE_BANKS[key];
+  document.getElementById('setupPosTag').textContent = r.label;
+  document.getElementById('setupTitle').textContent = r.label + " — Initial Interview";
+  document.getElementById('roleLabelInline').textContent = r.label + "-Specific";
+  document.getElementById('roleCount').textContent = r.questions.length;
+  roleScreen.style.display = 'none';
+  setupScreen.style.display = 'block';
+}
+
+document.getElementById('backToRoleBtn').addEventListener('click', () => {
+  setupScreen.style.display = 'none';
+  roleScreen.style.display = 'block';
+});
+
+document.getElementById('startBtn').addEventListener('click', proceedFromSetup);
+document.getElementById('welcomeNextBtn').addEventListener('click', () => {
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('privacyScreen').style.display = 'block';
+});
+document.getElementById('privacyConsentCheck').addEventListener('change', (e) => {
+  document.getElementById('privacyNextBtn').disabled = !e.target.checked;
+});
+document.getElementById('privacyNextBtn').addEventListener('click', () => {
+  document.getElementById('privacyScreen').style.display = 'none';
+  document.getElementById('instructionsScreen').style.display = 'block';
+});
+document.getElementById('instructionsNextBtn').addEventListener('click', () => {
+  document.getElementById('instructionsScreen').style.display = 'none';
+  document.getElementById('encourageScreen').style.display = 'block';
+});
+document.getElementById('encourageStartBtn').addEventListener('click', startInterview);
+
+document.getElementById('nextBtn').addEventListener('click', () => go(1));
+document.getElementById('prevBtn').addEventListener('click', () => go(-1));
+document.getElementById('skipBtn').addEventListener('click', () => go(1, true));
+document.getElementById('restartBtn').addEventListener('click', () => location.reload());
+toggleSidebarBtn.addEventListener('click', () => sidebar.classList.toggle('hidden'));
+
+document.addEventListener('keydown', (e) => {
+  if (flasherScreen.classList.contains('active')) {
+    if (e.key === 'ArrowRight') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  }
+});
+
+function proceedFromSetup(){
+  if (!selectedRoleKey){ alert("Please choose a role first."); return; }
+  candidateName = document.getElementById('candName').value.trim() || "the candidate";
+
+  const incSelfIntro = document.getElementById('incSelfIntro').checked;
+  document.getElementById('privacySelfIntroLine').style.display = incSelfIntro ? 'block' : 'none';
+
+  // Reset the consent slide each time in case someone goes back and restarts.
+  document.getElementById('privacyConsentCheck').checked = false;
+  document.getElementById('privacyNextBtn').disabled = true;
+
+  setupScreen.style.display = 'none';
+  document.getElementById('welcomeScreen').style.display = 'block';
+}
+
+function shuffleArray(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Shuffles question order within each consecutive same-category block,
+// keeping category blocks in their original position/order. Every
+// question is kept — only the order within a category changes.
+function shuffleWithinCategoryRuns(questions){
+  const result = [];
+  let i = 0;
+  while (i < questions.length){
+    let j = i;
+    while (j < questions.length && questions[j].cat === questions[i].cat) j++;
+    result.push(...shuffleArray(questions.slice(i, j)));
+    i = j;
+  }
+  return result;
+}
+
+function startInterview(){
+  const roleBank = ROLE_BANKS[selectedRoleKey];
+  const incSelfIntro = document.getElementById('incSelfIntro').checked;
+  const incGeneral = document.getElementById('incGeneral').checked;
+  const incRole = document.getElementById('incRole').checked;
+
+  deck = [];
+  if (incSelfIntro) shuffleWithinCategoryRuns(SELF_INTRO_QUESTIONS).forEach(q => deck.push({...q, part:"Part 0 · Self-Introduction"}));
+  if (incGeneral) shuffleWithinCategoryRuns(GENERAL_QUESTIONS).forEach(q => deck.push({...q, part:"Part 1 · General HR Screening"}));
+  if (incRole) shuffleWithinCategoryRuns(roleBank.questions).forEach(q => deck.push({...q, part:`Part 2 · ${roleBank.label}`}));
+
+  if (deck.length === 0){
+    alert("Please include at least one question set before starting.");
+    return;
+  }
+
+  document.getElementById('topCandidate').textContent = candidateName;
+  document.getElementById('topPosition').textContent = roleBank.label;
+  document.getElementById('candTagName').textContent = candidateName;
+  document.getElementById('endCandName').textContent = candidateName;
+  topMeta.style.display = 'flex';
+  toggleSidebarBtn.style.display = 'block';
+
+  buildSidebar();
+  current = 0;
+  showFlasher();
+  render();
+}
+
+function buildSidebar(){
+  sidebar.innerHTML = '';
+  sidebar.classList.remove('hidden');
+  let lastPart = null;
+  deck.forEach((q, i) => {
+    if (q.part !== lastPart){
+      const h = document.createElement('h4');
+      h.textContent = q.part;
+      sidebar.appendChild(h);
+      lastPart = q.part;
+    }
+    const item = document.createElement('div');
+    item.className = 'qnav-item';
+    item.dataset.index = i;
+    item.innerHTML = `<div class="qnum">${i+1}</div><div class="qtext">${q.text}</div>`;
+    item.addEventListener('click', () => { current = i; render(); });
+    sidebar.appendChild(item);
+  });
+}
+
+function showFlasher(){
+  setupScreen.style.display = 'none';
+  roleScreen.style.display = 'none';
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('privacyScreen').style.display = 'none';
+  document.getElementById('instructionsScreen').style.display = 'none';
+  document.getElementById('encourageScreen').style.display = 'none';
+  endScreen.classList.remove('active');
+  flasherScreen.classList.add('active');
+}
+
+function go(dir){
+  current += dir;
+  if (current < 0) current = 0;
+  if (current >= deck.length){ finishInterview(); return; }
+  render();
+}
+
+let thinkInterval = null;
+let thinkSecondsLeft = 30;
+
+function resetThinkTimer(){
+  if (thinkInterval) clearInterval(thinkInterval);
+  thinkInterval = null;
+  thinkSecondsLeft = 30;
+  const pill = document.getElementById('thinkTimer');
+  const label = document.getElementById('thinkTimerText');
+  pill.classList.remove('done', 'running');
+  label.textContent = `30s — click Start when ready`;
+  document.getElementById('thinkStartBtn').disabled = false;
+  document.getElementById('thinkEndBtn').disabled = true;
+}
+
+function startThinkTimerManual(){
+  if (thinkInterval) return; // already running
+  if (thinkSecondsLeft <= 0) thinkSecondsLeft = 30;
+  const pill = document.getElementById('thinkTimer');
+  const label = document.getElementById('thinkTimerText');
+  pill.classList.remove('done');
+  pill.classList.add('running');
+  document.getElementById('thinkStartBtn').disabled = true;
+  document.getElementById('thinkEndBtn').disabled = false;
+  label.textContent = `${thinkSecondsLeft}s remaining…`;
+  thinkInterval = setInterval(() => {
+    thinkSecondsLeft--;
+    if (thinkSecondsLeft > 0){
+      label.textContent = `${thinkSecondsLeft}s remaining…`;
+    } else {
+      clearInterval(thinkInterval);
+      thinkInterval = null;
+      pill.classList.remove('running');
+      pill.classList.add('done');
+      label.textContent = `Time's up — whenever you're ready…`;
+      document.getElementById('thinkStartBtn').disabled = false;
+      document.getElementById('thinkEndBtn').disabled = true;
+    }
+  }, 1000);
+}
+
+function endThinkTimerManual(){
+  if (thinkInterval) clearInterval(thinkInterval);
+  thinkInterval = null;
+  const pill = document.getElementById('thinkTimer');
+  const label = document.getElementById('thinkTimerText');
+  pill.classList.remove('running');
+  label.textContent = `Stopped — click Start to time again`;
+  document.getElementById('thinkStartBtn').disabled = false;
+  document.getElementById('thinkEndBtn').disabled = true;
+}
+
+document.getElementById('thinkStartBtn').addEventListener('click', startThinkTimerManual);
+document.getElementById('thinkEndBtn').addEventListener('click', endThinkTimerManual);
+
+function render(){
+  const q = deck[current];
+  document.getElementById('partBadge').textContent = q.part;
+  document.getElementById('catBadge').textContent = q.cat;
+  document.getElementById('qtext').textContent = q.text;
+  document.getElementById('qhint').textContent = q.hint || '';
+  document.getElementById('counterText').textContent = `Question ${current+1} of ${deck.length}`;
+  document.getElementById('progressFill').style.width = ((current)/(deck.length-1||1)*100) + '%';
+  document.getElementById('prevBtn').disabled = current === 0;
+
+  const items = sidebar.querySelectorAll('.qnav-item');
+  items.forEach((el, i) => {
+    el.classList.toggle('active', i === current);
+    el.classList.toggle('done', i < current);
+  });
+  const activeEl = sidebar.querySelector('.qnav-item.active');
+  if (activeEl) activeEl.scrollIntoView({block:'nearest'});
+
+  resetThinkTimer();
+}
+
+function finishInterview(){
+  flasherScreen.classList.remove('active');
+  endScreen.classList.add('active');
+  if (thinkInterval) clearInterval(thinkInterval);
+}
+</script>
+</body>
+</html>
